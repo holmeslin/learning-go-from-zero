@@ -197,6 +197,7 @@
 | 第 1 章第 15 集 | 讀一行輸入（見下方） | 方法第 3 章；介面第 4 章 |
 | 第 1 章第 15 集 | 多個 `import` 用小括號、一行一個、照字母排序 | 第 8 章 |
 | 第 1 章第 16 集 | `strconv.Atoi` 加上 `if err != nil` 檢查（見下方） | 多回傳值第 2 章第 9 集；`error` 第 5 章 |
+| 第 14 章第 2 集 | `show` 小工具：`httptest.NewRequest` + `httptest.NewRecorder` 假造請求、印出回應；`httptest.NewServer(...)`、`defer srv.Close()`、`srv.URL` 在程式內開測試伺服器 | 第 14 章第 9 集 |
 
 讀一行輸入（`scanner` 每支程式建立一次，之後每讀一行就重複後兩行）：
 
