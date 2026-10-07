@@ -22,6 +22,9 @@ import (
 	"time"
 )
 
+// depsDir 放書中範例共用的 go.mod 與 go.sum；checkcode 必須在 repo 根目錄執行。
+const depsDir = "tools/checkcode/deps"
+
 type block struct {
 	file  string
 	line  int
@@ -132,12 +135,14 @@ func check(b block) error {
 		return err
 	}
 	defer os.RemoveAll(dir)
-	files := map[string]string{
-		"go.mod":  "module example\n\ngo 1.27\n",
-		"main.go": b.code,
+	files := map[string][]byte{"main.go": []byte(b.code)}
+	for _, name := range []string{"go.mod", "go.sum"} {
+		if files[name], err = os.ReadFile(filepath.Join(depsDir, name)); err != nil {
+			return err
+		}
 	}
 	for name, content := range files {
-		if err := os.WriteFile(filepath.Join(dir, name), []byte(content), 0o644); err != nil {
+		if err := os.WriteFile(filepath.Join(dir, name), content, 0o644); err != nil {
 			return err
 		}
 	}
