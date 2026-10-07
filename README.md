@@ -26,6 +26,8 @@ cd zh-TW && mdbook serve             # 本機預覽
 | `go,norun` | 只編譯與 `go vet`，不執行（伺服器、signal） |
 | `go,ignore` | 不驗證（片段、多檔案範例） |
 
+範例共用 `tools/checkcode/deps/go.mod`；需要第三方套件時在那裡鎖定版本（目前只有第 15 章的 `modernc.org/sqlite`）。
+
 ## 授權
 
 除非另有標示，本教學的文字、圖片與非程式碼內容以 [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) 授權。

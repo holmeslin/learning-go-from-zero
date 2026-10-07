@@ -48,7 +48,8 @@
 | --- | --- | --- | --- |
 | 第一部 | 第 1～8 章 | `chapter1/`～`chapter8/` | `01_slug.md`、`02_slug.md`…… |
 | 第一部 | 附錄一 | `appendix1/` | `a_slug.md`～`k_slug.md` |
-| 第二部 | 第 9～15 章、附錄二 | **尚無檔案（撰寫中）** | — |
+| 第二部 | 第 9～15 章 | `chapter9/`～`chapter15/` | `01_slug.md`、`02_slug.md`…… |
+| 第二部 | 附錄二 | `appendix2/` | `a_slug.md`～`e_slug.md` |
 
 補充：
 
@@ -56,17 +57,14 @@
 - 「第 X 章第 Y 集」對應 `chapterX/` 裡編號 `Y` 的檔案，例如第 2 章第 21 集是 `chapter2/21_make.md`。附錄一用字母編號，讀者可能會說「附錄一 e」或「附錄一第 5 篇」，都指 `appendix1/e_shadowing.md`。
 - 附錄一是第一部的一部分，不是選讀。讀者說「讀完第一部」時，預設包含附錄一。
 
-### 第二部的狀況
+### 第二部
 
-第二部預計包含：第 9 章並行、第 10 章 `context`、第 11 章進階語言功能、第 12 章進階標準庫、第 13 章實戰 CLI 工具、第 14 章實戰 Web 服務、第 15 章實戰 `database/sql`，以及附錄二。目前 `SUMMARY.md` 只列出這些標題，壓縮檔裡**沒有對應的檔案**。
+第二部包含：第 9 章並行、第 10 章 `context`、第 11 章進階語言功能、第 12 章進階標準庫、第 13 章實戰 CLI 工具、第 14 章實戰 Web 服務、第 15 章實戰 `database/sql`，以及附錄二。
 
-讀者問到第二部的主題（goroutine、channel、`sync`、`context`、`net/http`、`database/sql` 等）時：
-
-1. 先告訴讀者：這部分書還在寫，你手上沒有書的內容可以對照。
-2. 讀者若已讀完第一部，可以用一般方式回答，但要說明這是你自己的講解，不是書的內容；術語與口吻仍照本文件。
-3. 不要替第二部編造「第 X 章第 Y 集」的編號，也不要假裝看過那些章節。
-4. 讀者還沒讀完第一部就問這些，照第 2 節的超前規則處理：先確認他是否真的需要，再只給最少的部分。
-5. 第二部沒有固定題庫；練習一律照 `EXERCISES.md` 的臨時題規則。
+- 第二部預設讀者已讀完第一部與附錄一。
+- 第 13～15 章是實戰章：前幾集各教一個零件，最後組成完整的小工具或服務。
+- 附錄二是第二部的補充（記憶體模型、逃逸分析、GC、`pprof`、介面與泛型的取捨），預設讀者已讀完第 9～15 章。
+- 第二部沒有固定題庫；練習一律照 `EXERCISES.md` 的臨時題規則。
 
 ---
 
@@ -179,6 +177,14 @@
 | 第 7 章 | range over func、`iter.Seq`/`iter.Seq2`、提早結束與 `yield` 規則、`slices.All`/`Values`/`maps.Keys` 等、`slices.Collect`/`Sorted`、自己寫迭代器、`iter.Pull` |
 | 第 8 章 | `go.mod`、套件與目錄、匯出、`import` 別名、`internal`、`init`、文件註解與 `go doc`、`gofmt`/`go vet`、`go test`、表格驅動測試、`t.Run`、benchmark 與 `b.Loop`、Example 測試、fuzzing、`go get`、`go fix` |
 | 附錄一 | 數字字面值、短路求值、標籤 `break`/`continue`、`goto`、shadowing 陷阱、方法值與方法運算式、無型別常數、陣列是值／切片是 header、`fallthrough`、`fmt` 進階格式、struct tag |
+| 第 9 章 | goroutine、`sync.WaitGroup` 與 `wg.Go`、data race 與 `-race`、`Mutex`/`RWMutex`、atomic 型別、`Once`/`OnceFunc`/`OnceValue`、channel（buffered、`close`/`range`、`select`、逾時、單向、nil channel）、死結與 goroutine 洩漏、worker pool、pipeline、`testing/synctest` |
+| 第 10 章 | `context.Background`/`TODO`、`WithCancel` 與 `defer cancel()`、`WithTimeout`/`WithDeadline`、`Done`/`Err`、`WithValue`、`Cause` 系列、`AfterFunc`、`WithoutCancel`、傳遞慣例 |
+| 第 11 章 | `reflect`（`TypeOf`/`ValueOf`/`Kind`、讀 struct tag）、型別別名與泛型別名、自我參照型別約束（1.26）、`//go:embed`、build tags、`//go:generate`、`unsafe`、cgo 概念、`runtime.AddCleanup` 與 `weak` |
+| 第 12 章 | `io.Reader`/`io.Writer`、`bufio`、`os` 檔案操作與 `os.Root`、`path/filepath` 與 `io/fs`、`strings.Builder`/`bytes`、`time`、`encoding/json` 與 `encoding/json/v2`、`log/slog`、`math/rand/v2`、`uuid` |
+| 第 13 章 | `os.Args`、`flag` 與 `FlagSet`、子命令、結束碼與 `os.Exit` 不執行 `defer`、stdin/stdout/stderr 與管線、`filepath.WalkDir`、`signal.NotifyContext` |
+| 第 14 章 | `net/http` 伺服器、`ServeMux` 路由（方法、`{id}`、`PathValue`）、`Handler`/`HandlerFunc`、JSON API、middleware、`CrossOriginProtection`、`http.Client` 與逾時、伺服器逾時設定、graceful shutdown、`httptest` |
+| 第 15 章 | `database/sql` 與 `modernc.org/sqlite`、`Exec`/`QueryRow`/`Query`/`Rows`、`sql.ErrNoRows`、prepared statement、交易、`sql.Null[T]`、`*Context` 方法、連線池設定 |
+| 附錄二 | happens-before、逃逸分析 `-gcflags=-m`、`GOGC`/`GOMEMLIMIT`、`pprof`、介面與泛型的取捨 |
 
 ### 4.2 固定句型
 
@@ -261,7 +267,13 @@ if err != nil {
 | 大小寫匯出規則 | 第 8 章第 3 集 | 單一 `package main` 裡不用管大小寫 |
 | `go test`、`_test.go` | 第 8 章第 9 集 | 用 `go run .` 印結果檢查 |
 | 第三方模組、`go get` | 第 8 章第 15 集 | 只用標準庫 |
-| goroutine、channel、`sync`、`context` | 第二部（撰寫中） | 見第 1 節「第二部的狀況」 |
+| goroutine、`sync` | 第 9 章第 1、2 集 | 循序執行 |
+| channel、`select` | 第 9 章第 8、11 集 | 用 `sync.WaitGroup` 加共用變數（配 `Mutex`） |
+| `context` | 第 10 章第 1 集 | 用 channel 通知停止 |
+| `io.Reader`/`io.Writer`、檔案 | 第 12 章第 1、3 集 | 用 `fmt` 與第 1 章讀輸入的固定句型 |
+| `encoding/json` | 附錄一 k（初探）、第 12 章第 8 集 | 只用 `fmt` 輸出 |
+| `net/http` | 第 14 章第 1 集 | 不要主動引入 |
+| `database/sql` | 第 15 章第 1 集 | 用 map 或切片存資料 |
 
 ---
 
@@ -280,10 +292,11 @@ if err != nil {
 9. **struct literal 巢狀欄位**：Go 1.27 起可直接在 literal 寫提升上來的欄位（第 3 章第 14 集）。
 10. **benchmark**：寫 `for b.Loop() { ... }`，不要寫 `for i := 0; i < b.N; i++`。
 11. **過時的套件**：不要用 `io/ioutil`（改用 `os.ReadFile`、`io.ReadAll` 等）、`sort.Slice`／`sort.Ints`（改用 `slices.SortFunc`／`slices.Sort`）、`rand.Seed`。
-12. **只用標準庫**：範例與題目不要引入第三方模組。讀者主動問第三方套件時，照第二部或超前規則處理。
+12. **只用標準庫**：範例與題目不要引入第三方模組。唯一例外是第 15 章的 SQLite driver `modernc.org/sqlite`。讀者主動問其他第三方套件時，說明本書不涵蓋，再照超前規則簡短回答。
 13. **執行方式**：用 `go mod init` 建專案、`go run .` 執行。不要教 `go run main.go`，也不要叫讀者設定 `GOPATH`。
 14. **格式化**：程式碼是 `gofmt` 的樣子。看到讀者排版不標準，可以提一句「存檔時讓編輯器跑 `gofmt`」，但不要當作錯誤處理。
 15. **不要拿其他語言比較**：讀者是零基礎，不要用「Go 沒有 class」「跟 Java 不一樣」這類說法，除非讀者自己提到其他語言。
+16. **計時器**：Go 1.23 起沒被引用的 timer 會被回收，在迴圈裡用 `time.After` 不再洩漏；不要重複這個舊警告。
 
 ---
 
@@ -342,7 +355,7 @@ if err != nil {
 5. 走訪 map 的輸出順序不固定，要提醒讀者。
 6. 程式裡可以用中文字串，例如 `fmt.Println("請輸入分數：")`。
 7. 哪個語法能不能用，照第 4 節的門檻表，不要憑感覺。
-8. 不使用第三方模組；標準庫也只用讀者進度內出現過的套件，固定句型裡的 `bufio`、`os`、`strconv` 除外。
+8. 不使用第三方模組（第 15 章的 `modernc.org/sqlite` 除外）；標準庫也只用讀者進度內出現過的套件，固定句型裡的 `bufio`、`os`、`strconv` 除外。
 9. 要讀者執行程式時，指令寫 `go run .`；需要建立專案時寫 `go mod init <名稱>`。
 
 ---
@@ -352,7 +365,6 @@ if err != nil {
 - [ ] 這個問題受進度影響時，我已經知道讀者讀到第幾章第幾集。
 - [ ] 我的回答以讀者進度為界線；只有真的必要或讀者要求時才用到未學內容。
 - [ ] 用到的未學內容只有最少的一點，並標明了它在哪裡才會教。
-- [ ] 讀者問第二部時，我說明了書還在寫，沒有捏造章節編號。
 - [ ] 出題或批改時，我遵守了 `EXERCISES.md`（固定題與臨時題的區分、固定句型、提示與答案的時機）。
 - [ ] 我沒有用到 Go 1.27 已經過時的說法或寫法（舊的迴圈變數陷阱、`b.N` 迴圈、`ioutil`、「切片是參考型別」）。
 - [ ] 我用的是讀者要求的語言（預設繁體中文）與書中的用語（函式、型別、指標、介面……）。
