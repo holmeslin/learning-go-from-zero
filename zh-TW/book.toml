@@ -1,0 +1,17 @@
+[book]
+title = "從零開始學 Go"
+authors = ["Holmes Lin"]
+language = "zh-TW"
+
+[output.html]
+default-theme = "light"
+preferred-dark-theme = "ayu"
+git-repository-url = "https://github.com/holmeslin/learning-go-from-zero"
+edit-url-template = "https://github.com/holmeslin/learning-go-from-zero/edit/main/zh-TW/{path}"
+site-url = "/learning-go-from-zero/zh-TW/"
+
+[output.html.playground]
+runnable = false
+
+[output.html.print]
+page-break = false
