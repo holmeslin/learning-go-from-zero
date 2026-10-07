@@ -43,6 +43,15 @@ func main() {
 		os.Exit(2)
 	}
 
+	// 先編譯一次共用相依（SQLite driver 很大），讓建置快取就緒；
+	// 否則冷快取時多個範例會同時編譯它而超過單一範例的逾時。
+	warm := exec.Command("go", "build", "./...")
+	warm.Dir = depsDir
+	if out, err := warm.CombinedOutput(); err != nil {
+		fmt.Fprintf(os.Stderr, "build deps: %v\n%s", err, out)
+		os.Exit(2)
+	}
+
 	var (
 		wg       sync.WaitGroup
 		mu       sync.Mutex
