@@ -15,7 +15,7 @@
 - **Commit**（提交）：全部做完，一起生效。
 - **Rollback**（回滾）：中途有問題，全部取消，資料回到交易開始前的樣子。
 
-不會出現「只做一半」的狀態。
+交易保證這組 SQL 一起生效或一起取消，但不會替我們判斷轉帳條件。例如收款人不存在時，`UPDATE` 只是影響 0 列，不算 SQL 錯誤。我們還要檢查金額大於 0、扣款與收款各成功更新 1 列，才提交交易。
 
 ### 基本寫法
 
@@ -34,6 +34,10 @@ import (
 var ErrNotEnough = errors.New("餘額不足")
 
 func transfer(ctx context.Context, db *sql.DB, from, to string, amount int) error {
+	if amount <= 0 {
+		return errors.New("金額必須大於 0")
+	}
+
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -45,12 +49,24 @@ func transfer(ctx context.Context, db *sql.DB, from, to string, amount int) erro
 	if err != nil {
 		return err
 	}
-	if n, _ := res.RowsAffected(); n == 0 {
+	n, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if n != 1 {
 		return ErrNotEnough
 	}
 
-	if _, err := tx.Exec("UPDATE accounts SET balance = balance + ? WHERE name = ?", amount, to); err != nil {
+	res, err = tx.Exec("UPDATE accounts SET balance = balance + ? WHERE name = ?", amount, to)
+	if err != nil {
 		return err
+	}
+	n, err = res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if n != 1 {
+		return errors.New("收款帳戶不存在")
 	}
 	return tx.Commit()
 }
@@ -109,12 +125,16 @@ func main() {
 
 一步一步看 `transfer`：
 
+- 先檢查金額大於 0。零或負數不是這個範例接受的轉帳金額，直接回傳錯誤，不開始交易。
 - `db.BeginTx(ctx, nil)` 開始一個交易，回傳 `*sql.Tx`。第一個參數是第 10 章的 context，第二個是交易選項，用預設值就傳 `nil`。（也有不帶 context 的 `db.Begin()`。）
 - 交易裡的每個 SQL 都要用 **`tx`** 的方法：`tx.Exec`、`tx.QueryRow`、`tx.Query`。用 `db.Exec` 的話，那段 SQL 會跑到交易外面，不受 Commit／Rollback 控制。在我們只有一條連線的設定下更糟：那條連線正被交易佔著，`db.Exec` 會一直等下去。
-- 扣款的 `WHERE ... AND balance >= ?` 讓餘額不夠時一列都不會改到，所以用 `RowsAffected` 是否為 0 判斷餘額不足。
-- 全部成功才 `return tx.Commit()`。
+- 兩次 `Exec` 都先檢查 SQL 錯誤，再檢查 `RowsAffected` 回傳的錯誤與列數。`name` 是主鍵，每次應該各更新 1 列。
+- 扣款的 `WHERE ... AND balance >= ?` 讓餘額不夠時一列都不會改到，回傳 `ErrNotEnough`。付款帳戶不存在時也會影響 0 列，這個範例沿用同一個錯誤。
+- 收款更新若影響 0 列，代表收款帳戶不存在，回傳錯誤。只有兩邊都成功更新 1 列，才 `return tx.Commit()`。
 
 第二次轉帳在第一步就發現餘額不足，直接 `return ErrNotEnough`，`defer` 的 `tx.Rollback()` 取消交易，餘額都沒變。
+
+如果收款帳戶不存在，扣款雖然已經執行，也會因為後面的錯誤而回滾。從小明 500、小美 100 開始，轉 300 給不存在的人會回傳錯誤，兩人的餘額仍是 500、100。這是我們補上轉帳條件的檢查，不是交易的「全部成功或全部不算」失效。
 
 ### `defer tx.Rollback()` 為什麼安全
 
@@ -173,7 +193,8 @@ Rollback： sql: transaction has already been committed or rolled back true
 
 ## 重點整理
 
-- 交易把多個 SQL 綁在一起：`Commit` 一起生效，`Rollback` 一起取消，不會只做一半。
+- 交易把多個 SQL 綁在一起：`Commit` 一起生效，`Rollback` 一起取消；轉帳條件仍要由程式檢查。
+- 轉帳金額必須大於 0；扣款與收款都要檢查 SQL、`RowsAffected` 的錯誤及影響列數，確認各更新 1 列才提交。
 - `db.BeginTx(ctx, nil)` 開始交易；交易裡的 SQL 都要用 `tx.Exec`、`tx.QueryRow`、`tx.Query`，不要用 `db`。
 - 開始交易後立刻 `defer tx.Rollback()`，全部成功時最後 `return tx.Commit()`。
 - `Commit` 之後再 `Rollback` 只會回傳 `sql.ErrTxDone`，不會影響已提交的資料。
