@@ -8,7 +8,7 @@
 
 ### 先準備一台伺服器
 
-要練習送請求，總得有個對象。下面的範例用 `httptest.NewServer` 在程式裡**真的**開一台伺服器（只有這支程式自己連得到），`srv.URL` 是它的網址，例如 `http://127.0.0.1:56123`，埠號每次不同。這也是先照抄的寫法，第 9 集會正式介紹。
+要練習送請求，總得有個對象。下面的範例用 `httptest.NewServer` 在程式裡**真的**開一台伺服器，監聽本機的 loopback（迴路）位址，使用真正的 TCP 連線。`srv.URL` 是它的網址，例如 `http://127.0.0.1:56123`，埠號每次不同。同一台電腦上知道網址的其他程序也能連到，不是只有這支程式能用。這和前面直接呼叫 handler、用 `httptest.NewRecorder` 記下回應而不開網路連線不同。這些都是先照抄的寫法，第 9 集會正式介紹。
 
 ### 送出請求、讀取 JSON
 
@@ -85,7 +85,7 @@ tokyo 失敗： 伺服器回應 404 Not Found
 
 **`http.Client{Timeout: 10 * time.Second}`**：`Client` 是送請求的物件，`Timeout` 是整個請求（連線、送出、等回應、讀完內容）最多能花多久。**一定要設定它**。`http.Get` 這類方便函式用的是 `http.DefaultClient`，它**沒有**逾時：對方伺服器如果卡住不回，你的程式就會永遠等下去。`Client` 可以重複使用，也能同時被多個 goroutine 使用，建立一個就好。
 
-**`http.NewRequestWithContext(ctx, 方法, 網址, 內容)`**：建立請求並綁上 context（第 10 章）。context 被取消時，請求會立刻中止。如果你的程式本身是伺服器，就把 handler 收到的 `r.Context()` 傳進來，使用者斷線時，你替他發出的請求也會跟著停下。`req.Header.Set` 可以加上標頭。最後用 `client.Do(req)` 送出。
+**`http.NewRequestWithContext(ctx, 方法, 網址, 內容)`**：建立請求並綁上 context（第 10 章）。context 被取消時，HTTP client 會中止請求，但這不代表遠端 handler 已經停止工作。如果你的程式本身是伺服器，就把 handler 收到的 `r.Context()` 傳進來，使用者斷線時，你替他發出的請求也會跟著取消。`req.Header.Set` 可以加上標頭。最後用 `client.Do(req)` 送出。
 
 **`defer resp.Body.Close()`**：只要 `err == nil`，就**一定要**關閉 `resp.Body`。不關的話，底層的網路連線不會被回收，程式跑久了會用光連線或記憶體。習慣是拿到 `resp` 之後馬上寫這行。
 
@@ -144,7 +144,7 @@ context 逾時： true
 
 `Client.Timeout` 是這個 client 所有請求的上限；context 則可以針對單一次請求設定，兩者同時存在時，先到的那個生效。
 
-伺服器的 handler 裡用 `select` 等 `r.Context().Done()`：客戶端放棄後，伺服器這邊的 context 也會被取消，handler 就不用白白等滿 5 秒。
+伺服器的 handler 裡用 `select` 等 `r.Context().Done()`：這個 loopback 範例中，客戶端放棄並關閉連線後，伺服器偵測到斷線就會取消 context。handler 選到取消的分支便會回傳，不必白白等滿 5 秒；不是 client 的逾時設定直接強制停止了遠端的工作。
 
 ### 送出 JSON
 
