@@ -16,7 +16,7 @@ package main
 import "fmt"
 
 func greet(name string) {
-	fmt.Println("哈囉，" + name)
+	fmt.Printf("哈囉，%s\n", name)
 }
 
 func main() {
@@ -76,7 +76,7 @@ package main
 import "fmt"
 
 func greet(name string) {
-	fmt.Println("哈囉，" + name)
+	fmt.Printf("哈囉，%s\n", name)
 }
 
 func main() {
