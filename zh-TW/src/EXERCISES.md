@@ -128,7 +128,7 @@
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -177,7 +177,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -231,7 +231,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -246,7 +246,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -294,7 +294,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -336,7 +336,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -387,7 +387,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -440,7 +440,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -484,7 +484,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -535,7 +535,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -591,7 +591,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -608,7 +608,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -653,7 +653,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -710,7 +710,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -727,7 +727,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -774,7 +774,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go,stdin=小美\n牛肉麵
 package main
 
 import (
@@ -834,7 +834,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go,stdin=25
 package main
 
 import (
@@ -904,7 +904,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go,stdin=5
 package main
 
 import (
@@ -979,7 +979,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1000,7 +1000,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go,stdin=1234\ngopher
 package main
 
 import (
@@ -1052,7 +1052,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1116,7 +1116,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1130,7 +1130,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1185,7 +1185,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1201,7 +1201,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1250,7 +1250,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1307,7 +1307,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1385,7 +1385,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1400,7 +1400,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1452,7 +1452,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1464,7 +1464,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1516,7 +1516,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1536,7 +1536,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go,stdin=12
 package main
 
 import (
@@ -1610,7 +1610,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1653,7 +1653,7 @@ Autumn 的編號： 3
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1726,7 +1726,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1773,7 +1773,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1826,7 +1826,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1877,7 +1877,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1937,7 +1937,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1957,7 +1957,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2003,7 +2003,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2092,7 +2092,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2159,7 +2159,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2179,7 +2179,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2228,7 +2228,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2273,7 +2273,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2347,7 +2347,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2366,7 +2366,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2409,7 +2409,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2461,7 +2461,7 @@ backup: [3 1 4]
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2509,7 +2509,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2575,7 +2575,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go,stdin=5
 package main
 
 import (
@@ -2610,7 +2610,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2661,7 +2661,7 @@ byte 數： 36 字數： 12
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2713,7 +2713,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2779,7 +2779,7 @@ gopher@example.tw
 
 題 1：
 
-```go,ignore
+```go,stdin=Gopher@Example.TW
 package main
 
 import (
@@ -2807,7 +2807,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import (
@@ -2857,7 +2857,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2912,7 +2912,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go,stdin=小華
 package main
 
 import (
@@ -2968,7 +2968,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -3025,7 +3025,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -3093,7 +3093,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -3112,7 +3112,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
