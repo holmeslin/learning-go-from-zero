@@ -130,7 +130,9 @@ map[string]struct {}
 - `Set[string]` 就是 `map[string]struct{}` 本身，所以可以直接指定給 `map[string]struct{}` 型別的變數，`%T` 印出來也是 map 的原本樣子。
 - `struct{}` 是不佔記憶體的空 struct，拿來當 map 的值，表示「只在乎 key 有沒有出現」。
 
-如果改成 `type Set[T comparable] map[T]struct{}`（沒有等號），就是第 6 章的泛型自訂型別，可以替它加方法，但不能直接和 `map[string]struct{}` 混用。
+如果改成 `type Set[T comparable] map[T]struct{}`（沒有等號），就是第 6 章的泛型自訂型別，可以替它加方法。上例的 `Set[string]` 和 `map[string]struct{}` 不是同一個型別，但仍能直接互相賦值：因為兩者的底層型別相同，而且普通的 `map[string]struct{}` 是**未命名型別**，也就是沒有另取型別名稱的 map 寫法。
+
+所以即使沒有等號，上例的 `var m map[string]struct{} = seen` 仍然合法，反過來寫 `var back Set[string] = m` 也可以。兩個不同的自訂 map 型別則不能只因底層型別相同，就直接互相賦值。
 
 ## 重點整理
 
@@ -138,3 +140,4 @@ map[string]struct {}
 - `byte`、`rune`、`any` 都是內建的別名。
 - 別名主要用在搬移型別時保持相容，或幫很長的型別取短名字；想表達新概念時用自訂型別。
 - Go 1.24 起可以寫泛型別名，例如 `type Set[T comparable] = map[T]struct{}`。
+- 自訂 map 型別與底層型別相同的未命名 map 可以直接互相賦值，但不代表它們是同一個型別。
