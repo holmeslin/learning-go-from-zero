@@ -6,7 +6,7 @@
 
 ## 正文
 
-`break` 和 `continue` 只會影響**最靠近的那一層**迴圈。巢狀迴圈時，這常常不是我們想要的。
+不加標籤時，`break` 會跳出最近的 `for`、`switch` 或 `select`（`select` 第 9 章會正式介紹）。`continue` 則會進入最近的 `for` 的下一輪。下面只有巢狀 `for`，所以兩者都只影響最內層迴圈，這常常不是我們想要的。
 
 ### 問題：`break` 只跳出內層
 
@@ -126,11 +126,11 @@ rowLoop:
 ### 小提醒
 
 - 宣告了標籤卻沒用到，Go 會編譯失敗，就像沒用到的變數一樣。
-- 標籤也能用在 `switch` 和 `select` 上（`select` 第 9 章會介紹）。在迴圈裡的 `switch` 中寫 `break`，跳出的是 `switch` 而不是迴圈；想跳出迴圈，就給迴圈加標籤。
+- `break 名稱` 的標籤也能指向包住它的 `switch` 或 `select`；`continue 名稱` 只能指向包住它的 `for`。在迴圈裡的 `switch` 中寫 `break`，跳出的是 `switch` 而不是迴圈；想跳出迴圈，就給迴圈加標籤。
 
 ## 重點整理
 
-- `break`、`continue` 預設只影響最內層的迴圈。
+- `break` 預設跳出最近的 `for`、`switch` 或 `select`；`continue` 則進入最近的 `for` 的下一輪。
 - 在迴圈前寫 `名稱:` 就是標籤；`break 名稱` 跳出那一層迴圈。
 - `continue 名稱` 直接進入那一層迴圈的下一輪。
 - 宣告了沒用的標籤會編譯失敗。
