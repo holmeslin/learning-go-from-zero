@@ -24,6 +24,7 @@ import (
 	"cmp"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"slices"
@@ -63,8 +64,14 @@ func (s *store) create(w http.ResponseWriter, r *http.Request) {
 		Name  string `json:"name"`
 		Price int    `json:"price"`
 	}
-	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
+	dec := json.NewDecoder(r.Body)
+	if err := dec.Decode(&in); err != nil {
 		http.Error(w, "JSON 格式錯誤："+err.Error(), http.StatusBadRequest)
+		return
+	}
+	var extra any
+	if err := dec.Decode(&extra); err != io.EOF {
+		http.Error(w, "請求必須是大小限制內的單一 JSON 值", http.StatusBadRequest)
 		return
 	}
 	if in.Name == "" || in.Price < 0 {
@@ -150,11 +157,13 @@ JSON 格式錯誤：unexpected EOF
 
 ### 讀取請求：解碼 JSON
 
-`r.Body` 是請求的內容，型別是 `io.ReadCloser`（可以讀、也可以關閉的 `io.Reader`）。`json.NewDecoder(r.Body).Decode(&in)` 直接從它讀出 JSON、填進 `in`。這裡的 `in` 用匿名 struct（第 3 章），只放我們願意讓使用者給的欄位：使用者不能自己指定 `id`。
+`r.Body` 是請求的內容，型別是 `io.ReadCloser`（可以讀、也可以關閉的 `io.Reader`）。先用 `json.NewDecoder(r.Body)` 建立 decoder，再用 `dec.Decode(&in)` 讀出一個 JSON 值、填進 `in`。這裡的 `in` 用匿名 struct（第 3 章），只放我們願意讓使用者給的欄位：使用者不能自己指定 `id`。
+
+一次 `Decode` 只讀下一個值，不代表整個請求已經讀完。我們用**同一個 decoder** 再解碼一次，只有得到 `io.EOF` 才繼續：這表示第一個值後面只剩空白，沒有第二個值或垃圾。第二次若成功讀到值（錯誤是 `nil`），或遇到其他錯誤，都回 `400`，不新增商品，也不消耗 ID。
 
 收到的資料一定要**檢查**。JSON 格式錯了、名稱空白、價格是負數，都回 `400`，並說明哪裡錯。不要相信從網路上來的任何東西。
 
-最前面那行 `http.MaxBytesReader` 限制請求內容最多 1 MB（`1<<20` 就是 1048576）。沒有它的話，別人送來一個超大的請求，伺服器就會一直讀下去、吃光記憶體。
+最前面那行 `http.MaxBytesReader` 在讀取時限制請求內容最多 1 MiB（`1<<20` 就是 1048576 bytes）。第二次解碼會繼續讀過尾端空白，因此尾端也算在上限內；超限時得到的不是 `io.EOF`，同樣回 `400`。只建立大小限制、讀完第一個值就停，還不能確認整個請求沒有超限。
 
 ### 回應錯誤：`http.Error`
 
@@ -180,7 +189,7 @@ JSON 格式錯誤：unexpected EOF
 
 ## 重點整理
 
-- 用 `json.NewDecoder(r.Body).Decode(&v)` 解碼請求，並用 `http.MaxBytesReader` 限制大小。
+- 用同一個 `json.Decoder` 解碼請求，再解碼一次確認得到 `io.EOF` 才新增；`http.MaxBytesReader` 的大小上限也包含尾端空白。
 - 收到的資料一定要檢查，有錯就用 `http.Error(w, 訊息, 狀態碼)` 回應並 `return`。
 - 回應 JSON 的順序：設定 `Content-Type` 標頭 → `WriteHeader(狀態碼)` → 寫入內容。
 - 用 `http.StatusCreated` 等常數表達結果：200 成功、201 新增、400 請求錯誤、404 找不到。
