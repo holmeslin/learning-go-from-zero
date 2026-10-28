@@ -125,7 +125,7 @@ func main() {
 ```
 
 - JSON 裡多出來的 `price`，struct 沒有對應欄位，直接被忽略。
-- JSON 裡沒有的 `author`，欄位就保持零值。
+- JSON 裡沒有的 `author`，不會改動欄位原本的值。這裡 `b` 是新的零值變數，所以 `Author` 仍是空字串；如果原本是 `Book{Author: "保留的作者"}`，解碼同一份 JSON 後就會保留這個作者。需要全新的結果時，先使用新的零值變數。
 - JSON 格式壞掉，或型別對不上（`pages` 是字串，欄位卻是 `int`），`Unmarshal` 會回傳錯誤。
 
 ### 不知道結構時：`map[string]any`
@@ -244,7 +244,7 @@ Go 1.27 正式加入了新版的 `encoding/json/v2`（下一集介紹），而�
 ## 重點整理
 
 - `json.Marshal` 把 Go 值編碼成 JSON，`MarshalIndent` 產生排版過的版本；只有匯出欄位會被編碼。
-- `json.Unmarshal(data, &v)` 要傳指標；多的欄位被忽略，缺的欄位保持零值，格式或型別不符會回傳錯誤。
+- `json.Unmarshal(data, &v)` 要傳指標；多的欄位被忽略，缺的欄位不改動原值。需要全新結果時用新的零值變數；格式或型別不符會回傳錯誤。
 - 解碼到 `map[string]any` 時，數字一律是 `float64`；能用 struct 就用 struct。
 - `json.NewDecoder(r).Decode(&v)` 從 Reader 讀、`json.NewEncoder(w).Encode(v)` 寫到 Writer。
 - Go 1.27 起 `encoding/json` 底層由 v2 實作，行為不變，但錯誤訊息文字可能不同。
