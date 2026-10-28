@@ -79,8 +79,12 @@ FAIL
 `-run` 可以指定要執行哪些測試，子測試用 `/` 分隔：
 
 ```bash
-go test -v -run 'TestHello/空字串' ./greet
+go test -v -run "TestHello/空字串" ./greet
 ```
+
+這裡用雙引號，照抄到 Windows 的命令提示字元（CMD）時也請保留。CMD 不會像 macOS 終端機或 PowerShell 那樣，用單引號包住這個參數；單引號會跟著傳進 `-run` 的內容，反而選不到要跑的測試。
+
+執行結果（某一次）：
 
 ```text
 === RUN   TestHello
@@ -88,10 +92,10 @@ go test -v -run 'TestHello/空字串' ./greet
 --- PASS: TestHello (0.00s)
     --- PASS: TestHello/空字串 (0.00s)
 PASS
-ok  	myapp/greet	0.373s
+ok  	myapp/greet	0.419s
 ```
 
-只有「空字串」那一列被執行。表格很大、只想專心修某一列的時候，這招非常好用。名字裡最好不要放空白，在指令裡指定時會比較方便。
+只有「空字串」那一列被執行。除了 `PASS`，也要確認輸出有 `=== RUN   TestHello/空字串`；如果顯示 `[no tests to run]`，代表沒有選到測試，不是這一列通過了。表格很大、只想專心修某一列的時候，這招非常好用。名字裡最好不要放空白，在指令裡指定時會比較方便。
 
 `t.Run` 裡也可以放心使用 `t.Fatalf`：它只會結束**這一個**子測試，其他列照樣執行。
 
@@ -99,5 +103,5 @@ ok  	myapp/greet	0.373s
 
 - `t.Run(名字, func(t *testing.T) { ... })` 建立有名字的子測試。
 - 表格驅動測試搭配 `t.Run`，每一列都有獨立的名字和結果。
-- 子測試的完整名字是 `測試函式名/子測試名`，可用 `go test -run` 只執行特定子測試。
+- 子測試的完整名字是 `測試函式名/子測試名`，可用 `go test -run "測試函式名/子測試名"` 只執行特定子測試；保留雙引號，並確認輸出真的有執行那一列。
 - 子測試裡的 `t.Fatalf` 只結束該子測試。
