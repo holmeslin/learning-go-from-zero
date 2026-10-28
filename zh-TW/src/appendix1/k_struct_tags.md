@@ -14,11 +14,13 @@ type User struct {
 }
 ```
 
-欄位型別後面那串用反引號包起來的東西，就是 **struct tag**。
+欄位型別後面那段字串，就是 **struct tag**，通常用反引號包起來。
 
 ### tag 只是一段字串
 
-對 Go 語言本身來說，tag 就只是附在欄位上的一段 raw string，不會改變欄位的型別，也不會改變程式的行為。它的意義完全由**讀取它的套件**決定。
+tag 可以用合法的字串 literal，不限於 raw string。例如 `Name string "json:\"name\""` 也合法，和上面的反引號寫法表示同一段字串；只是用雙引號時，裡面的雙引號要跳脫，所以通常選反引號。
+
+tag 不會改變欄位本身的型別，也不會自動執行某個動作，具體用途由**讀取它的套件**決定。不過，tag 會參與整個 struct 的**型別同一性**判定：兩個匿名 struct 即使欄位名稱和型別相同，只要 tag 不同，就不是同一個型別，不能直接互相賦值。
 
 慣例格式是 `key:"value"`，多組之間用空格分開：
 
@@ -157,7 +159,7 @@ func main() {
 
 ## 重點整理
 
-- struct tag 是寫在欄位後面、用反引號包起來的字串，慣例格式是 `key:"value"`。
-- tag 本身不影響程式行為，由 `encoding/json` 等套件讀取並決定意義。
+- struct tag 是欄位附帶的字串，通常用反引號，也能用雙引號；慣例格式是 `key:"value"`。
+- tag 會參與 struct 的型別同一性判定；它不自動執行動作，具體用途由 `encoding/json` 等套件解讀。
 - `json:"name"` 指定 JSON 裡的名稱；沒寫 tag 就用欄位名稱。
 - `omitempty` 省略空值，但不認得 struct；Go 1.24 起的 `omitzero` 省略零值，struct 也適用。

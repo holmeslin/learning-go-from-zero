@@ -39,7 +39,7 @@ invalid operation: v == target (incomparable types in type set)
 
 因為不是所有型別都能用 `==`，例如切片、map、函式就不行。
 
-內建的 `comparable` 約束代表「所有能用 `==` 和 `!=` 比較的型別」：
+使用內建的 `comparable` 約束，就能在泛型函式裡寫 `==` 和 `!=`：
 
 ```go
 package main
@@ -78,6 +78,8 @@ func main() {
 
 數字、字串、指標都是 comparable；欄位全部可以比較的 struct 也是（第 3 章的 struct 比較）。
 
+`any` 等介面型別也能滿足 `comparable`，但這不保證裡面的動態值一定能安全比較。如果兩邊的動態型別相同，卻是切片這種不能比較的型別，仍會 panic。例如 `indexOf[any]([]any{[]int{1}}, []int{1})` 能編譯，執行到 `v == target` 時卻會 panic；含介面欄位的 struct 也可能遇到同樣的問題。
+
 map 的 key 必須能用 `==` 比較，所以泛型函式裡要用 `T` 當 map 的 key 時，也要用 `comparable`：
 
 ```go
@@ -110,7 +112,7 @@ map[1:1 2:2]
 
 ### `cmp.Ordered`：可以比大小
 
-`comparable` 只保證能判斷「相不相等」，不保證能比大小：
+`comparable` 讓你能寫相等比較，不代表可以用 `<`、`>` 比大小：
 
 ```go,compile_fail
 package main
@@ -189,7 +191,8 @@ cherry
 
 ## 重點整理
 
-- `comparable` 是內建約束，代表能用 `==`、`!=` 比較的型別；要當 map key 也要用它。
+- `comparable` 是內建約束，讓泛型函式能用 `==`、`!=`；要當 map key 也要用它。
 - 切片、map、函式不是 comparable。
+- `any` 等介面也能滿足 `comparable`，但動態值不可比較時仍可能 panic；含介面欄位的 struct 也要留意。
 - `cmp.Ordered` 代表能用 `<`、`>` 比大小的型別：整數、浮點數、字串。
 - 依函式裡需要的運算，選擇 `any`、`comparable` 或 `cmp.Ordered`。
