@@ -100,7 +100,7 @@ context canceled
 | `SetConnMaxLifetime(d)` | 一條連線最多用多久就換新的 | 不限制 |
 | `SetConnMaxIdleTime(d)` | 一條連線閒置多久就關掉 | 不限制 |
 
-下面用一個檔案資料庫，讓 10 個 goroutine 同時查詢，連線池最多開 4 條連線：
+下面把檔案資料庫放在自己建立的唯一暫存目錄裡，讓 10 個 goroutine 同時查詢，連線池最多開 4 條連線：
 
 ```go
 package main
@@ -110,6 +110,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"path/filepath"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -118,12 +119,18 @@ import (
 )
 
 func main() {
-	db, err := sql.Open("sqlite", "pool_demo.db")
+	dir, err := os.MkdirTemp("", "pooldemo")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	defer os.Remove("pool_demo.db")
+	defer os.RemoveAll(dir)
+
+	db, err := sql.Open("sqlite", filepath.Join(dir, "pool_demo.db"))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	defer db.Close()
 
 	db.SetMaxOpenConns(4)
@@ -162,7 +169,9 @@ func main() {
 沒超過上限： true
 ```
 
-`db.Stats()` 回傳連線池的統計資料。實際開了幾條連線要看 goroutine 執行的時機，每次可能不同，但一定不會超過 4 條；超過的請求會排隊等別人歸還連線。（`defer` 照後進先出的順序，先 `db.Close()` 再刪掉檔案。）
+`db.Stats()` 回傳連線池的統計資料。實際開了幾條連線要看 goroutine 執行的時機，每次可能不同，但一定不會超過 4 條；超過的請求會排隊等別人歸還連線。
+
+`os.MkdirTemp` 建立這次範例專用的唯一暫存目錄，`filepath.Join` 把資料庫檔名接在裡面，不會開啟或刪除目前資料夾的同名檔案。`defer` 照後進先出的順序，先 `db.Close()`，再用 `os.RemoveAll(dir)` 清理自己建立的目錄。
 
 ### 怎麼設定
 
@@ -178,3 +187,4 @@ func main() {
 - 被中斷的錯誤可以用 `errors.Is(err, context.DeadlineExceeded)` 或 `context.Canceled` 判斷。
 - `*sql.DB` 是可以給多個 goroutine 共用的連線池；整個程式通常只開一個。
 - 用 `SetMaxOpenConns`、`SetMaxIdleConns`、`SetConnMaxLifetime`、`SetConnMaxIdleTime` 調整連線池；`:memory:` 要設 `SetMaxOpenConns(1)`，也不要讓連線過期。
+- 範例資料庫放在自己建立的唯一暫存目錄裡，先關閉資料庫，再清理該目錄，不刪除原有的同名檔案。
