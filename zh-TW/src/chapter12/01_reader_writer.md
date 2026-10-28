@@ -114,7 +114,7 @@ func main() {
 
 ### 自己做一個 Writer
 
-只要有 `Write` 方法就是 `io.Writer`。我們來做一個「把寫進來的英文字母轉大寫，再交給另一個 Writer」的型別：
+只要實作 `Write(p []byte) (n int, err error)`，就能當作 `io.Writer` 使用，但也要遵守寫入的規則。我們來做一個「把寫進來的 ASCII 小寫英文字母轉大寫，再交給另一個 Writer」的型別：
 
 ```go
 package main
@@ -131,12 +131,14 @@ type upperWriter struct {
 }
 
 func (u upperWriter) Write(p []byte) (int, error) {
-	upper := strings.ToUpper(string(p))
-	_, err := io.WriteString(u.w, upper)
-	if err != nil {
-		return 0, err
+	upper := make([]byte, len(p))
+	copy(upper, p)
+	for i, b := range upper {
+		if b >= 'a' && b <= 'z' {
+			upper[i] = b - 'a' + 'A'
+		}
 	}
-	return len(p), nil
+	return u.w.Write(upper)
 }
 
 func main() {
@@ -153,13 +155,15 @@ HELLO, WRITER
 GO IS FUN
 ```
 
-- `Write` 回傳的 `n` 要代表「收下了幾個 byte」，所以回傳 `len(p)`，而不是轉換後的長度。
-- `io.WriteString(w, s)` 可以把字串直接寫進任何 Writer。
+- `Write` 回傳的 `n` 是「實際寫入了幾個 byte」。底層可能只寫入一部分就發生錯誤，不能一律回傳 `0` 或 `len(p)`。這裡轉換前後長度相同，所以直接傳回底層的 `n` 和 `err`。
+- Writer 不可以修改呼叫者傳進來的 `p`，連暫時修改也不行。所以先用 `make` 和 `copy` 複製一份，再改這份副本。
+- 這個 Writer 只把 ASCII 的 `a` 到 `z` 轉成 `A` 到 `Z`，其他 bytes 原樣保留。UTF-8 的一個字可能拆在兩次 `Write` 之間，不能把每一塊各自當成完整文字做 Unicode 大寫轉換。
 - `upperWriter` 裡面又包了一個 Writer，這種「包一層、加一點功能」的寫法在 Go 很常見，下一集的 `bufio` 就是這樣做的。
 
 ## 重點整理
 
 - `io.Reader` 只有 `Read(p []byte) (n int, err error)`；讀完時回傳 `io.EOF`，要先處理 `n` 再看 `err`。
-- `io.Writer` 只有 `Write(p []byte) (n int, err error)`；`os.Stdout`、檔案、`strings.Builder` 都是 Writer。
+- `io.Writer` 只有 `Write(p []byte) (n int, err error)`；`n` 是實際寫入的 byte 數，不能修改 `p`。`os.Stdout`、檔案、`strings.Builder` 都是 Writer。
 - `strings.NewReader` 把字串變成 Reader；`io.Copy(dst, src)` 把 Reader 的內容全部搬到 Writer。
-- 自己的型別只要實作 `Write`（或 `Read`），就能和標準庫所有的 Reader／Writer 工具搭配。
+- `upperWriter` 複製輸入後只轉換 ASCII 小寫字母，其他 bytes 不變，直接傳回底層的寫入計數與錯誤。
+- 自己的型別實作 `Write`（或 `Read`）並遵守介面的規則，就能和標準庫的 Reader／Writer 工具搭配。
