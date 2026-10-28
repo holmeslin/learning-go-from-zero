@@ -140,13 +140,21 @@ import (
 	"strings"
 )
 
-func main() {
+func run() error {
 	scanner := bufio.NewScanner(os.Stdin)
 	w := bufio.NewWriter(os.Stdout)
 	defer w.Flush()
 
 	for scanner.Scan() {
 		fmt.Fprintln(w, strings.ToUpper(scanner.Text()))
+	}
+	return scanner.Err()
+}
+
+func main() {
+	if err := run(); err != nil {
+		fmt.Fprintln(os.Stderr, "讀取失敗：", err)
+		os.Exit(1)
 	}
 }
 ```
@@ -159,7 +167,7 @@ RUST
 ZIG
 ```
 
-記得 `defer w.Flush()`，否則最後還留在緩衝區的資料不會寫出去。也因為這樣，用了 `bufio.Writer` 的程式更要注意第 4 集的陷阱：在 `main` 裡呼叫 `os.Exit` 會跳過 `Flush`。
+記得 `defer w.Flush()`，否則最後還留在緩衝區的資料不會寫出去。這裡沿用第 4 集的 `run` 寫法：掃描結束後回傳 `scanner.Err()`，先執行 `run` 裡的 `defer`，再由 `main` 印出錯誤、呼叫 `os.Exit(1)`。這樣遇到太長的行時就不會當作成功，也不會跳過已處理資料的 `Flush`。
 
 這支 `upper` 也能接在管線中間，例如 `./upper < langs.txt | sort -r` 會先轉大寫，再交給 `sort` 反向排序。
 
@@ -169,4 +177,4 @@ ZIG
 - 用 `for scanner.Scan()` 讀完全部輸入，結束後檢查 `scanner.Err()`。
 - 結果寫 stdout，錯誤與警告寫 stderr，這樣 `> 檔案` 或 `|` 只會拿到乾淨的資料。
 - `a | b` 把 a 的輸出接到 b 的輸入；`< 檔案` 把檔案接到 stdin。
-- 大量輸出用 `bufio.NewWriter(os.Stdout)`，並記得 `defer w.Flush()`。
+- 大量輸出用 `bufio.NewWriter(os.Stdout)`；把 `defer w.Flush()` 放在 `run` 裡，讓它在 `main` 呼叫 `os.Exit` 前執行。
