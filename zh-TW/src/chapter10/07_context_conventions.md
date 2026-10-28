@@ -57,7 +57,7 @@ func main() {
 }
 ```
 
-執行結果：
+執行結果（某一次）：
 
 ```text
 [會員7的訂單 A 會員7的訂單 B]
@@ -68,6 +68,8 @@ func main() {
 - context 從 `main` 開始，一層一層當參數往下傳，每個函式都把**收到的** `ctx` 交給它呼叫的函式。
 - `handleRequest` 用收到的 `ctx` 當父 context，衍生出一個加了時限的版本，再傳下去。上層一取消，這裡也會跟著取消。
 - `findUser` 開頭用 `ctx.Err()` 檢查一下：已經被取消了就不用白做。
+
+這次選到查訂單的等待分支，所以印出訂單。時間長短不保證精確的排程順序；若執行被延遲，也可能印出逾時錯誤。`select` 選擇時若工作和取消都準備好了，會隨機挑一個，context 的取消分支沒有優先權。
 
 之後學到的標準函式庫，例如第 14 章的 HTTP、第 15 章的資料庫，都照這個慣例設計。
 
@@ -175,4 +177,4 @@ auditCtx: <nil>
 - 不要把 context 存在 struct 欄位裡，改成每個方法都從參數接收。
 - 不要傳 `nil` context，用 `nil` 衍生 context 會 panic；不知道傳什麼就用 `context.TODO()`。
 - `context.WithoutCancel(parent)` 不受 parent 取消影響，但保留 parent 的資料，適合請求結束後的收尾工作。
-- 建立 context 的一方負責呼叫 `cancel`，接收的一方只負責聽從取消。
+- 建立 context 的一方負責呼叫 `cancel`，接收的一方配合檢查並回傳；取消不會強制停止工作，也不讓 `select` 的取消分支優先。
