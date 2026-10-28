@@ -8,7 +8,7 @@
 
 ### 什麼是子命令
 
-`go` 這支程式本身不做事，真正的工作由第一個參數決定：`go build` 編譯、`go test` 測試、`go mod init` 建立模組。這個第一個參數就是**子命令**（subcommand）。而且 `go build -o` 的 `-o`，在 `go test` 裡並不存在：每個子命令有自己的一組選項。
+`go` 這支程式本身不做事，真正的工作由第一個參數決定：`go build` 編譯、`go test` 測試、`go mod init` 建立模組。這個第一個參數就是**子命令**（subcommand）。例如 `go test -run` 可以挑選要執行的測試，但 `go build` 沒有 `-run`：每個子命令有自己的一組選項。
 
 做法分兩步：
 
@@ -48,6 +48,10 @@ func repeatCmd(args []string) {
 	n := fs.Int("n", 2, "重複幾次")
 	sep := fs.String("sep", " ", "分隔符號")
 	fs.Parse(args)
+	if *n < 0 {
+		fmt.Fprintln(os.Stderr, "重複次數不能是負數")
+		return
+	}
 
 	text := strings.Join(fs.Args(), " ")
 	parts := make([]string, *n)
@@ -106,6 +110,7 @@ HELLO GO
 - `main` 先確認至少有一個參數，再用 `switch` 依 `os.Args[1]` 分派給對應的函式；不認得的子命令就印出錯誤和用法。
 - 每個子命令函式收到的是 `os.Args[2:]`，也就是**去掉程式名稱和子命令之後**剩下的參數。
 - `repeatCmd` 用 `flag.NewFlagSet("repeat", ...)` 建立自己的選項 `-n` 和 `-sep`，`upperCmd` 則沒有任何選項。`NewFlagSet` 的第一個參數是名稱，會出現在說明文字裡。
+- `flag` 能把 `-1` 解析成整數，但重複次數不能是負數，所以在 `make` 前先檢查，印出錯誤後 `return`。本集先用這個方式回報，下一集再學如何用結束碼告訴其他程式「失敗了」。
 
 ### 每個子命令有自己的說明
 
@@ -142,3 +147,4 @@ Usage of upper:
 - 每個子命令用 `flag.NewFlagSet` 建立自己的選項，解析 `os.Args[2:]`。
 - 每個 `FlagSet` 有自己的 `-h` 說明，名稱就是 `NewFlagSet` 的第一個參數。
 - 沒給或給錯子命令時，印出錯誤與用法說明。
+- 選項能解析成整數，不代表數值就合理；拿來當切片長度前，要先拒絕負數。
