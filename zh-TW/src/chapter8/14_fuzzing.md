@@ -81,34 +81,45 @@ ok  	myapp/textutil	0.465s
 
 ### 開始 fuzzing
 
-加上 `-fuzz` 指定要跑的 fuzz 測試，`-fuzztime` 指定最多跑多久：
+加上 `-fuzz` 指定要跑的 fuzz 測試，`-fuzztime=2s` 讓這次隨機探索約跑兩秒；準備、收尾等工作也需要時間，整個指令可能花得更久：
 
 ```bash
 go test -fuzz=FuzzReverse -fuzztime=2s ./textutil
 ```
 
+執行結果（某一次）：
+
 ```text
-fuzz: elapsed: 0s, gathering baseline coverage: 0/2 completed
-fuzz: elapsed: 0s, gathering baseline coverage: 2/2 completed, now fuzzing with 14 workers
-fuzz: minimizing 35-byte failing input file
-fuzz: elapsed: 0s, minimizing
---- FAIL: FuzzReverse (0.04s)
+fuzz: elapsed: 0s, gathering baseline coverage: 0/42 completed
+fuzz: minimizing 33-byte failing input file
+fuzz: elapsed: 0s, gathering baseline coverage: 13/42 completed
+--- FAIL: FuzzReverse (0.02s)
     --- FAIL: FuzzReverse (0.00s)
-        textutil_test.go:17: Reverse("Ή") = "\x89\xce"，不是合法的 UTF-8
+        textutil_test.go:17: Reverse("秧") = "\xa7\xa7\xe7"，不是合法的 UTF-8
     
-    Failing input written to testdata/fuzz/FuzzReverse/be2fb4fb01accd28
+    Failing input written to testdata/fuzz/FuzzReverse/f12301413e1dcca2
     To re-run:
-    go test -run=FuzzReverse/be2fb4fb01accd28
+    go test -run=FuzzReverse/f12301413e1dcca2
 FAIL
 exit status 1
-FAIL	myapp/textutil	0.585s
+FAIL	myapp/textutil	1.959s
 ```
 
-不到一秒就找到了。因為是隨機的，**你找到的字元、檔名和數字都會不同**，但錯誤一定是同一種。
+這次很快就找到了，但**不保證兩秒內一定找到失敗**。如果時間到了仍顯示 `PASS`，只代表這次沒找到，不表示程式沒有錯，也不表示你操作錯誤。可以延長 `-fuzztime` 再試。找到的字元、檔名和數字每次可能不同；上面這次也用了先前保留的 fuzz 快取，所以準備檢查的輸入不只原本的兩個種子。
 
 問題在哪？第 2 章學過，中文、希臘字母這類字元在 UTF-8 裡佔好幾個位元組。`Reverse` 把**位元組**顛倒，一個字元的幾個位元組順序也被打亂，就變成不合法的 UTF-8 了。
 
-Go 把這個失敗的輸入存進 `testdata/fuzz/FuzzReverse/` 資料夾。之後每次執行普通的 `go test`，它都會被當成一個種子重新檢查，這個錯誤就不會再偷偷回來。
+如果 fuzzing 找到失敗，Go 會把輸入存進 `testdata/fuzz/FuzzReverse/` 資料夾。之後每次執行普通的 `go test`，它都會被當成一個種子重新檢查，這個錯誤就不會再偷偷回來。
+
+### 不靠隨機也能重現
+
+不管剛才有沒有找到失敗，我們都在 `FuzzReverse` 的 `f.Add("hello")` 後面、`f.Fuzz` 前面加上這一行：
+
+```go,ignore
+f.Add("中")
+```
+
+再執行 `go test -v ./textutil`。`"中"` 是已知的多位元組字元，普通測試就會確定在第三個種子 `FuzzReverse/seed#2` 失敗，訊息會有 `Reverse("中") = "\xad\xb8\xe4"，不是合法的 UTF-8`，不必等待隨機命中。保留這個種子，修正後還要用它檢查。
 
 ### 修正
 
@@ -124,33 +135,37 @@ func Reverse(s string) string {
 }
 ```
 
-執行 `go test -v ./textutil`，可以看到剛才存下來的輸入也被檢查了：
+執行 `go test -v ./textutil`，三個種子都應該通過；如果剛才有存下隨機找到的失敗輸入，也會一起檢查。想單獨重跑已知的 `"中"`，可以用前面學過的 `-run`：
+
+```bash
+go test -v -run="FuzzReverse/seed#2" ./textutil
+```
+
+執行結果（某一次）：
 
 ```text
 === RUN   FuzzReverse
-=== RUN   FuzzReverse/seed#0
-=== RUN   FuzzReverse/seed#1
-=== RUN   FuzzReverse/be2fb4fb01accd28
+=== RUN   FuzzReverse/seed#2
 --- PASS: FuzzReverse (0.00s)
-    --- PASS: FuzzReverse/seed#0 (0.00s)
-    --- PASS: FuzzReverse/seed#1 (0.00s)
-    --- PASS: FuzzReverse/be2fb4fb01accd28 (0.00s)
+    --- PASS: FuzzReverse/seed#2 (0.00s)
 PASS
-ok  	myapp/textutil	5.658s
+ok  	myapp/textutil	0.189s
 ```
 
-再 fuzz 一次：
+再執行一次 `go test -fuzz=FuzzReverse -fuzztime=2s ./textutil`：
+
+執行結果（某一次）：
 
 ```text
-fuzz: elapsed: 0s, gathering baseline coverage: 0/37 completed
-fuzz: elapsed: 0s, gathering baseline coverage: 37/37 completed, now fuzzing with 14 workers
-fuzz: elapsed: 3s, execs: 231061 (77017/sec), new interesting: 6 (total: 43)
-fuzz: elapsed: 3s, execs: 231061 (0/sec), new interesting: 6 (total: 43)
+fuzz: elapsed: 0s, gathering baseline coverage: 0/43 completed
+fuzz: elapsed: 0s, gathering baseline coverage: 43/43 completed, now fuzzing with 14 workers
+fuzz: elapsed: 3s, execs: 218898 (72934/sec), new interesting: 3 (total: 46)
+fuzz: elapsed: 3s, execs: 218898 (0/sec), new interesting: 3 (total: 46)
 PASS
-ok  	myapp/textutil	10.447s
+ok  	myapp/textutil	11.192s
 ```
 
-這次試了二十幾萬個輸入都沒問題（數字每次不同）。`testdata` 資料夾請一起保留下來，它是測試的一部分。
+這次試了二十幾萬個輸入都沒找到失敗（數字每次不同），但這不是所有輸入都正確的證明。如果有產生 `testdata` 資料夾，請一起保留下來，它是測試的一部分。
 
 不加 `-fuzztime` 的話，fuzzing 會一直跑到找出錯誤或你按下 Ctrl+C 為止。
 
@@ -159,4 +174,4 @@ ok  	myapp/textutil	10.447s
 - fuzz 測試以 `Fuzz` 開頭，參數是 `f *testing.F`；`f.Add` 加種子，`f.Fuzz` 裡寫「對任何輸入都必須成立」的規則。
 - 普通的 `go test` 只用種子和 `testdata` 裡的輸入跑一次；`go test -fuzz=名稱` 才會產生隨機輸入。
 - 找到的失敗輸入會存到 `testdata/fuzz/`，之後每次測試都會重新檢查。
-- `-fuzztime` 限制 fuzzing 的時間；隨機找到的輸入和數字每次都不同。
+- `-fuzztime` 限制隨機探索的時間，不保證在時間內找到失敗；已知的多位元組種子可以用普通 `go test` 確定重現本例的錯誤。
