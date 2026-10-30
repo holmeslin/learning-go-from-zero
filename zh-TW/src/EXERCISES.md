@@ -128,7 +128,7 @@
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -177,7 +177,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -231,7 +231,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -246,7 +246,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -294,7 +294,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -336,7 +336,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -387,7 +387,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -440,7 +440,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -484,7 +484,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -535,7 +535,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -591,7 +591,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -608,7 +608,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -653,7 +653,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -710,7 +710,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -727,7 +727,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -774,7 +774,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go,stdin=小美\n牛肉麵
 package main
 
 import (
@@ -834,7 +834,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go,stdin=25
 package main
 
 import (
@@ -904,7 +904,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go,stdin=5
 package main
 
 import (
@@ -979,7 +979,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1000,7 +1000,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go,stdin=1234\ngopher
 package main
 
 import (
@@ -1052,7 +1052,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1116,7 +1116,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1130,7 +1130,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1185,7 +1185,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1201,7 +1201,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1250,7 +1250,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1307,7 +1307,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1385,7 +1385,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1400,7 +1400,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1417,8 +1417,8 @@ func main() {
 狀態：不出題
 
 不出題原因：
-- 這集只是先認識「字有號碼」以及單引號、雙引號的差別，實際處理一段文字裡的每個字要到第 2 章第 22、23 集。
-- 現在出題只能印出某個字的號碼，練不到東西。建議讀者繼續讀，第 2 章第 23 集有對應的題目。
+- 這集只是先認識 Unicode 碼位以及單引號、雙引號的差別，實際以 rune 為單位處理一段文字要到第 2 章第 22、23 集。
+- 現在出題只能印出某個碼位的數字，練不到東西。建議讀者繼續讀，第 2 章第 23 集有對應的題目。
 
 ### 第 1 章第 29 集：跳脫字元與 raw string
 
@@ -1452,7 +1452,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1464,7 +1464,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1516,7 +1516,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1536,7 +1536,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go,stdin=12
 package main
 
 import (
@@ -1610,7 +1610,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1653,7 +1653,7 @@ Autumn 的編號： 3
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1726,7 +1726,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1763,9 +1763,10 @@ func main() {
 
 批改重點：
 - 文字用 `%s`、整數用 `%d`、小數用 `%.2f`。
+- `%.2f` 只把浮點值捨入顯示到小數點後兩位，不是金額的十進位逢五進位規則；這題的平均剛好是可精確表示的 65，只練習顯示位數。
 - 每一行結尾要有 `\n`。
 - 平均要先轉成 `float64` 再除：`float64(total) / float64(count)`。
-- 動詞的數量要和後面的值對上；不對時 `go vet` 會提醒。
+- 除了不需要值的 `%%`，本集的格式動詞數量與種類要和後面的值對上；不對時 `go vet` 會提醒。
 
 提示方向：
 1. `fmt.Printf("數量：%d 杯\n", count)` 會把 `count` 填進 `%d` 的位置。
@@ -1773,7 +1774,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1826,7 +1827,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1877,7 +1878,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1937,7 +1938,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -1957,7 +1958,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2003,7 +2004,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2092,7 +2093,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2159,7 +2160,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2179,7 +2180,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2228,7 +2229,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2273,7 +2274,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2347,7 +2348,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2366,7 +2367,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2409,7 +2410,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2461,7 +2462,7 @@ backup: [3 1 4]
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2509,7 +2510,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2575,7 +2576,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go,stdin=5
 package main
 
 import (
@@ -2610,7 +2611,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2633,11 +2634,11 @@ func main() {
 狀態：可用
 
 練習目標：
-- 知道 `len(s)` 算的是 byte 數，不是字數。
-- 會用 `len([]rune(s))` 算字數。
+- 知道 `len(s)` 算的是 byte 數，不是 rune 數。
+- 會用 `len([]rune(s))` 算 rune 數，並知道它不一定等於可見字元數。
 
 題目：
-1. 社群貼文限制最多 10 個字。寫一個函式 `checkPost(text string)`，印出這段文字的 byte 數、字數，以及有沒有超過限制。用 `"Hello Go"` 和 `"今天天氣很好適合出去走走"` 各試一次。
+1. 本題的社群貼文限制最多 10 個 Unicode 碼位（rune），輸入都是有效的 UTF-8。寫一個函式 `checkPost(text string)`，印出這段文字的 byte 數、字數，以及有沒有超過限制。本題輸出裡的「字數」「10 個字」一律按 rune 計算，不是按可見字元計算。用 `"Hello Go"` 和 `"今天天氣很好適合出去走走"` 各試一次。
 
 執行範例：
 
@@ -2651,17 +2652,17 @@ byte 數： 36 字數： 12
 ```
 
 批改重點：
-- 字數要用 `len([]rune(text))`，不能用 `len(text)`。
-- 英文字一個字 1 byte，中文字通常 3 byte，所以兩者在英文時相同、中文時不同。
-- 空白也算一個字。
+- 本題字數以 rune 為單位，要用 `len([]rune(text))`，不能用 `len(text)`。
+- 本題的英文字母與空白各佔 1 byte、中文字各佔 3 byte，所以英文範例的 byte 數與 rune 數相同，中文範例則不同。
+- 空白也算一個 rune；組合字或 emoji 可能佔多個 rune，不能一律算成一個。
 
 提示方向：
 1. 先印出 `len(text)`，看看中文那句是不是比你想的多很多。
-2. 把字串轉成 `[]rune` 之後，每一格就是一個字。
+2. 把字串轉成 `[]rune` 之後，每一格代表一個 Unicode 碼位。
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2688,11 +2689,11 @@ func main() {
 狀態：可用
 
 練習目標：
-- 會用 `for _, r := range s` 一個字一個字走訪字串。
-- 會拿 `rune` 和單引號的字比較。
+- 會用 `for _, r := range s` 以 rune 為單位走訪字串。
+- 會拿 `rune` 和單引號的碼位比較。
 
 題目：
-1. 寫一個函式 `countRune(s string, target rune) int`，回傳 `target` 這個字在 `s` 裡出現幾次。用它算出 `"吃葡萄不吐葡萄皮，不吃葡萄倒吐葡萄皮"` 裡有幾個 `'葡'`、幾個 `'吐'`。
+1. 寫一個函式 `countRune(s string, target rune) int`，回傳 `target` 這個 Unicode 碼位在 `s` 裡出現幾次。用它算出 `"吃葡萄不吐葡萄皮，不吃葡萄倒吐葡萄皮"` 裡有幾個 `'葡'`、幾個 `'吐'`。
 
 執行範例：
 
@@ -2702,18 +2703,18 @@ func main() {
 ```
 
 批改重點：
-- 走訪要用 `for _, r := range s`，拿到的 `r` 是完整的字。
+- 走訪要用 `for _, r := range s`，拿到的 `r` 是一個 Unicode 碼位，不保證是一個完整的可見字元。
 - 用 `s[i]` 走訪會拿到 byte，比不到中文字。
 - 比較時用單引號：`r == target`，呼叫時傳 `'葡'`。
 - 印出 `rune` 時要用 `string(r)` 才會是字；這題印的是次數，不需要轉。
 
 提示方向：
-1. 先寫一個迴圈，把每個字用 `string(r)` 印出來，確認拿到的是完整的字。
+1. 先寫一個迴圈，把每個 rune 用 `string(r)` 印出來，確認拿到的是「葡」「吐」這樣的碼位，而不是它們編碼裡的單一 byte。
 2. 再加上 `if r == target` 和計數。
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2779,7 +2780,7 @@ gopher@example.tw
 
 題 1：
 
-```go,ignore
+```go,stdin=Gopher@Example.TW
 package main
 
 import (
@@ -2807,7 +2808,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import (
@@ -2857,7 +2858,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -2912,7 +2913,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go,stdin=小華
 package main
 
 import (
@@ -2968,7 +2969,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -3025,7 +3026,7 @@ func main() {
 
 參考答案：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -3093,7 +3094,7 @@ func main() {
 
 題 1：
 
-```go,ignore
+```go
 package main
 
 import "fmt"
@@ -3112,7 +3113,7 @@ func main() {
 
 題 2：
 
-```go,ignore
+```go
 package main
 
 import "fmt"

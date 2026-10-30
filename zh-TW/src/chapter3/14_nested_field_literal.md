@@ -39,13 +39,13 @@ func main() {
 {Animal:{Name:Lucky Legs:4} Breed:柴犬}
 ```
 
-`Name` 和 `Legs` 是 `Animal` 的欄位，但因為 `d.Name`、`d.Legs` 是合法的寫法，所以 literal 裡也可以直接寫 `Name:`、`Legs:`。印出來的結果和以前的寫法 `Dog{Animal: Animal{Name: "Lucky", Legs: 4}, Breed: "柴犬"}` 一模一樣，只是寫起來比較短。
+`Name` 和 `Legs` 是 `Animal` 的欄位；這裡 `d.Name`、`d.Legs` 能唯一選到它們，而且中間嵌入的是 `Animal` 值、不是指標，所以 literal 裡也可以直接寫 `Name:`、`Legs:`。印出來的結果和以前的寫法 `Dog{Animal: Animal{Name: "Lucky", Legs: 4}, Breed: "柴犬"}` 一模一樣，只是寫起來比較短。
 
 沒寫到的欄位一樣是零值。例如 `Dog{Name: "Lucky"}` 的 `Legs` 是 `0`、`Breed` 是 `""`。
 
 ### 好幾層也可以
 
-嵌入了好幾層也沒關係，只要用 `.欄位` 能一步拿到，literal 裡就能直接寫：
+嵌入了好幾層也沒關係，只要欄位名稱沒有歧義，而且中間每一層嵌入的都是 struct 值、不是指標，literal 裡就能直接寫：
 
 ```go
 package main
@@ -80,9 +80,9 @@ func main() {
 {Animal:{Base:{ID:7} Name:Lucky} Breed:柴犬}
 ```
 
-`ID` 在 `Dog` 裡面的 `Animal` 裡面的 `Base` 裡面，但 `d.ID` 可以直接拿到，所以 `ID: 7` 也能直接寫。
+`ID` 在 `Dog` 裡面的 `Animal` 裡面的 `Base` 裡面，但 `d.ID` 可以直接拿到，而且中間沒有經過指標，所以 `ID: 7` 也能直接寫。
 
-### 三個限制
+### 四個限制
 
 這個新寫法有幾個規矩，不符合的話會編譯失敗。
 
@@ -121,6 +121,8 @@ cannot specify promoted field Name and enclosing embedded field Animal
 
 **第三，有歧義的名稱不能用。** 上一集提過，如果 `Dog` 同時嵌入兩個都有 `Name` 的型別，`d.Name` 會編譯失敗。literal 裡也一樣，寫 `Name:` 會得到 `unknown field Name in struct literal of type Dog`，這時只能用 `Animal: Animal{...}` 的寫法。
 
+**第四，不能沿著嵌入指標攤開。** 如果 `Dog` 嵌入的是 `*Animal`，即使 `d.Name` 能直接存取，`Dog{Name: "Lucky"}` 仍會得到 `invalid implicit pointer indirection to reach Name`。這時要明寫 `Dog{Animal: &Animal{Name: "Lucky"}}`，不能請 literal 自動建立中間的指標。
+
 ### 需要 Go 1.27
 
 這是 Go 1.27 才加入的寫法。是否能用，看的是 `go.mod` 裡的 `go` 版本：如果寫的是 `go 1.26` 或更舊，就算你裝的是 Go 1.27，編譯器也會把 `Name:` 當成 `Dog` 沒有的欄位，回報 `unknown field Name in struct literal of type Dog`。本書的範例都是 `go 1.27`，可以放心使用。
@@ -130,6 +132,6 @@ cannot specify promoted field Name and enclosing embedded field Animal
 ## 重點整理
 
 - 從 Go 1.27 起，struct literal 可以直接寫提升上來的欄位，例如 `Dog{Name: "Lucky", Breed: "柴犬"}`。
-- 嵌入好幾層也可以，只要 `d.欄位` 能直接存取就行。
+- 嵌入好幾層也可以，但欄位名稱要沒有歧義，中間每一層嵌入的都要是 struct 值、不是指標。
 - 不能同時寫嵌入欄位本身（`Animal:`）和它裡面的欄位（`Name:`）；key 也不能寫成 `Animal.Name` 這種路徑。
 - 有歧義的欄位名稱不能這樣寫；`go.mod` 的 `go` 版本要是 1.27 以上。

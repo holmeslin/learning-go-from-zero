@@ -2,7 +2,7 @@
 
 ## 本集目標
 
-用名叫 `internal` 的資料夾，讓套件只給模組裡特定範圍的程式碼使用。
+用名叫 `internal` 的資料夾，讓套件只給特定匯入路徑範圍的程式碼使用。
 
 ## 正文
 
@@ -14,7 +14,7 @@
 
 ### 規則
 
-路徑中有一段叫 `internal` 的套件，只能被「`internal` 的上一層資料夾」以及它底下的程式碼引入。
+路徑中有一段叫 `internal` 的套件，只能被「`internal` 上一層匯入路徑」所涵蓋的套件引入，也就是該路徑本身與它的子路徑。這個範圍稱為匯入路徑的**子樹**。在一般單模組專案裡，可以先對照資料夾結構來看。
 
 看這個模組 `shop` 的結構：
 
@@ -31,7 +31,7 @@ shop/
     └── report.go
 ```
 
-`price` 的路徑是 `shop/order/internal/price`，`internal` 的上一層是 `order`。所以只有 `order` 資料夾以及它底下的套件能引入 `price`；`report` 和根目錄的 `main.go` 都不行。
+`price` 的路徑是 `shop/order/internal/price`，`internal` 上一層的匯入路徑是 `shop/order`。所以只有路徑是 `shop/order` 或以 `shop/order/` 開頭的套件能引入 `price`；本例的 `report` 和根目錄的 `main.go` 都不行，即使它們在同一個模組裡。
 
 ### 實際試試
 
@@ -102,11 +102,13 @@ func main() {
 
 ### 常見的擺法
 
-很多專案會直接在模組最上層放一個 `internal` 資料夾，例如 `shop/internal/price`。`internal` 的上一層就是整個模組，所以模組裡的任何套件都能用，但**其他模組**一律不能用。這是「只給自己專案用」最常見的寫法。
+很多專案會直接在模組最上層放一個 `internal` 資料夾，例如 `shop/internal/price`。在一般單模組專案裡，模組中的套件都在 `shop` 這棵匯入路徑子樹內，所以都能用。這是「只給自己專案用」最常見的寫法。
+
+但限制不是看兩邊是否共用同一個 `go.mod`。例如 `example.com/shop/internal/price` 也能被 `example.com/shop/client` 引入，即使後者是獨立模組；`example.com/other` 則不行。判斷時要看匯入路徑的範圍，不是只看模組邊界。
 
 ## 重點整理
 
-- 路徑中有 `internal` 的套件，只能被 `internal` 上一層資料夾及其底下的程式碼引入。
+- 路徑中有 `internal` 的套件，只能被 `internal` 上一層匯入路徑本身及其子路徑中的套件引入。
 - 違反規則時，編譯會出現 `use of internal package ... not allowed`。
-- 放在模組最上層的 `internal`，代表「整個模組都能用，其他模組不能用」。
+- 放在模組最上層的 `internal`，通常讓整個模組都能用；是否允許引入是看匯入路徑，不是是否共用同一個 `go.mod`。
 - `go build ./...` 會編譯目前資料夾和底下所有的套件。

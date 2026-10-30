@@ -43,16 +43,18 @@ func main() {
 }
 ```
 
-執行結果：
+執行結果（某一次）：
 
 ```text
 伺服器 A
 goroutine 數量： 3
 ```
 
-`runtime.NumGoroutine()` 會回傳目前有幾個 goroutine（`runtime` 套件這裡只用這一個函式）。`time.Duration(i+1)` 是把整數轉成時間長度的型別，讓三台伺服器分別花 10、20、30 毫秒回答。
+`runtime.NumGoroutine()` 會回傳目前有幾個 goroutine（`runtime` 套件這裡只用這一個函式）。`time.Duration(i+1)` 是把整數轉成時間長度的型別，讓三個 goroutine 分別至少等待 10、20、30 毫秒再回答。
 
-`fastest` 只接收了一次就回傳了。另外兩個 goroutine 稍後要傳送時，已經沒有人會接收，它們就永遠卡在 `ch <- s`。等了 100 毫秒之後，除了 `main` 自己，還有 2 個 goroutine 卡著，所以數量是 3。每呼叫一次 `fastest`，就會多洩漏 2 個。
+`fastest` 只接收了一次就回傳了。另外兩個 goroutine 稍後要傳送時，已經沒有人會接收，它們就永遠卡在 `ch <- s`。這次先收到伺服器 A，等了 100 毫秒後觀察到數量是 3。常見的情況是 `main` 加上兩個卡在傳送的 goroutine。每呼叫一次 `fastest`，就會多洩漏 2 個。
+
+但 `Sleep` 不是同步工具，不保證哪台伺服器先回答，也不保證睡醒時其他 goroutine 都走到哪一行。`NumGoroutine` 計算的是當下所有仍存在的 goroutine，可能包含其他背景工作；這裡的 3 是觀察值，不能拿來精確判斷特定工作是否完成。
 
 ### 改法一：給足暫存空間
 
@@ -62,7 +64,7 @@ goroutine 數量： 3
 ch := make(chan string, len(servers))
 ```
 
-這樣其他 goroutine 就算沒人接收，也能把結果放進暫存區後順利結束。改了這一行之後再執行，數量就會變成 1。第 12 集逾時的範例給 1 格暫存區，也是同樣的道理。
+這樣其他 goroutine 就算沒人接收，也能把結果放進暫存區後順利結束。改了這一行之後，常見的觀察值是 1，但不保證睡醒後立刻量到這個數字。真正避免洩漏的原因是暫存區放得下所有結果，不是數量剛好等於 1。第 12 集逾時的範例給 1 格暫存區，也是同樣的道理。
 
 ### 改法二：通知它停下來
 
@@ -105,7 +107,7 @@ func main() {
 }
 ```
 
-執行結果：
+執行結果（某一次）：
 
 ```text
 1
@@ -116,8 +118,8 @@ goroutine 數量： 1
 
 - `struct{}` 是沒有任何欄位的 struct（第 3 章的匿名 struct），不佔空間。`chan struct{}` 表示「這條 channel 不傳資料，只用來通知」。
 - 背景的 goroutine 用 `select` 一邊送數字，一邊注意 `done`。
-- `main` 拿夠了就 `close(done)`。第 10 集說過，從關閉的 channel 接收會馬上成功，所以 `<-done` 這個 `case` 立刻可以進行，goroutine 就 `return` 了。而且關閉 channel 會同時通知**所有**正在等它的 goroutine，不管有幾個。
-- `for range nums {}` 把剩下的值收完，直到 goroutine 結束時 `defer close(out)` 關閉 `nums` 為止。這樣印數量時，背景 goroutine 一定已經結束了。
+- `main` 拿夠了就 `close(done)`。第 10 集說過，從關閉的 channel 接收會馬上成功，所以 `<-done` 這個 `case` 變成可以進行；goroutine 被排程、選到它之後就會 `return`。如果傳送也能進行，仍可能先送出數字，取消分支沒有優先權。關閉 channel 會通知**所有**正在等它的 goroutine，不管有幾個，但不代表它們在同一瞬間執行或停止。
+- `for range nums {}` 把剩下的值收完，直到 `defer close(out)` 關閉 `nums` 為止。迴圈結束確認了輸出已關閉，也能看見關閉前完成的工作；這不保證 runtime 此刻已把該 goroutine 從計數中移除。所以數量 1 仍只是這次的觀察，不是精確的完成斷言。
 
 這種「用一條 channel 通知停止」的做法非常普遍，標準庫把它包裝成了 `context`，第 10 章會正式介紹。
 
@@ -136,4 +138,5 @@ Go 1.27 起，`runtime/pprof` 套件正式提供一種叫 `goroutineleak` 的分
 - goroutine 永遠卡住、不會結束，就是 goroutine 洩漏；程式不會當掉，但卡住的 goroutine 會越積越多。
 - 先回傳、不再接收的寫法，容易讓其他傳送的 goroutine 洩漏；給足暫存空間可以避免。
 - 用一條 `chan struct{}` 加 `close` 通知 goroutine 停止，關閉會同時通知所有等待的 goroutine。
+- `Sleep` 和 `NumGoroutine` 不能判斷精確的完成時機；收到關閉通知確認的是關閉前的工作，不是 runtime 已移除 goroutine。
 - 每寫一個 `go`，都要想清楚它什麼時候、靠什麼結束。
