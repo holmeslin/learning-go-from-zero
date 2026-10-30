@@ -68,9 +68,9 @@ func main() {
 
 `squaresUpTo` 回傳一個匿名函式，這個匿名函式記住了外面的 `n`，這就是第 6 章的閉包。注意 `range` 後面這次有小括號：我們先**呼叫** `squaresUpTo(4)` 拿到迭代器，再把迭代器交給 `range`。
 
-### 迭代器可以重複使用
+### 能不能重複走訪，要看實作
 
-迭代器只是一個函式值，可以存進變數，也可以走訪很多次：
+迭代器是一個函式值，可以存進變數。本例的 `countdown` 每次走訪都會重新倒數，所以可以重複使用：
 
 ```go
 package main
@@ -110,7 +110,54 @@ func main() {
 3 2 1 再發射一次！
 ```
 
-建立 `seq` 的時候什麼都還沒算。每次 `range` 呼叫它，才從頭開始一個一個交出值。
+本例的倒數迴圈寫在回傳的匿名函式裡，建立 `seq` 時還沒開始倒數。每次 `range` 呼叫它，都會重新建立 `i`，從 `from` 開始交出值。這是 `countdown` 的實作方式，不是 `iter.Seq` 保證的行為；其他建構迭代器的函式也可能先檢查參數或準備資料。
+
+有些迭代器只能把整個序列走完一次，稱為 **single-use iterator**。下面把 `i` 放在回傳的匿名函式外面，讓每次走訪共用同一個進度：
+
+```go
+package main
+
+import (
+	"fmt"
+	"iter"
+)
+
+// once 回傳只能把序列走完一次的迭代器。
+func once(n int) iter.Seq[int] {
+	i := 1
+	return func(yield func(int) bool) {
+		for i <= n {
+			v := i
+			i++
+			if !yield(v) {
+				return
+			}
+		}
+	}
+}
+
+func main() {
+	seq := once(3)
+	for v := range seq {
+		fmt.Print(v, " ")
+	}
+	fmt.Println("完畢")
+	count := 0
+	for range seq {
+		count++
+	}
+	fmt.Println("第二次交出值的個數：", count)
+}
+```
+
+執行結果：
+
+```text
+1 2 3 完畢
+第二次交出值的個數： 0
+```
+
+這也是合法的 `iter.Seq[int]`，但走完後再走訪，就不會交出任何值。若中途停止，本例會在下次走訪時接著交出剩下的值，而不是從頭開始。使用別人提供的迭代器時，要看它的文件怎麼說。
 
 ### 迭代器也可以是泛型
 
@@ -152,5 +199,5 @@ func main() {
 
 - `iter.Seq[V]` 就是 `func(yield func(V) bool)`，是「交出 `V` 的迭代器」的型別名字。
 - 需要參數的迭代器，寫成「回傳 `iter.Seq[V]` 的函式」，裡面用閉包記住參數。
-- 建立迭代器時不會執行，每次 `range` 才從頭開始交出值，所以可以重複走訪。
+- 本集的 `countdown` 每次都從頭開始；其他 `iter.Seq` 能否重複走訪，要看實作與文件，single-use iterator 走完後不再交出值。
 - 迭代器可以搭配泛型，寫出適用各種型別的版本。

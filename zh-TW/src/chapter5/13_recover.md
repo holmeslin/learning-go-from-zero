@@ -49,15 +49,18 @@ func main() {
 1. `a / b` 除以 0，發生 panic。
 2. `divide` 停下來，開始執行它的 `defer`，也就是 `handlePanic()`。
 3. `handlePanic` 裡的 `recover()` 拿到 panic 的值，panic 就此結束。
-4. `divide` 正常回到 `main`，回傳值是 `int` 的零值 `0`。
+4. `divide` 正常回到 `main`；本例還沒設定回傳結果，所以回傳 `int` 的零值 `0`。
 5. `main` 繼續往下執行，印出「程式繼續執行」。
+
+接住 panic 不會回到出錯那一行往下跑。**安排這個 `defer` 的函式**會完成剩下的 `defer`，再回到它的呼叫者。如果 panic 發生在更深一層，已經結束的呼叫鏈也不會恢復；安排復原那一層的普通敘述也不再往下執行。如果那一層有具名回傳值，就回傳它目前的值，不一定是零值。
 
 ### `recover` 的回傳值
 
 `recover()` 的回傳型別是 `any`（第 4 章學過，可以裝任何值）：
 
-- 有 panic 正在發生時，回傳當初傳給 `panic` 的值；如果是執行期錯誤（像除以 0），回傳的值本身也是一個 `error`。
-- 沒有 panic 時，回傳 `nil`。
+- 在被 `defer` 的函式裡直接接住 panic 時，通常回傳當初傳給 `panic` 的值；如果是執行期錯誤（像除以 0），回傳的值本身也是一個 `error`。
+- `panic(nil)` 是例外：現行預設執行期會把它換成一個非 `nil` 的執行期錯誤。因此，成功接住 panic 時，`recover()` 不會回傳 `nil`。
+- 沒有 panic，或不是在被 `defer` 的函式裡直接呼叫時，回傳 `nil`。
 
 所以 `if r := recover(); r != nil` 這個寫法，意思是「如果真的有 panic，就處理它」。第一次呼叫 `divide(10, 2)` 沒有 panic，`handlePanic` 也有執行，只是 `recover()` 回傳 `nil`，什麼都不印。
 
@@ -106,6 +109,6 @@ defer func() {
 
 - `recover()` 能接住 panic，讓程式繼續執行，但只有在被 `defer` 的函式裡直接呼叫才有效。
 - 常見寫法是寫一個處理函式，再 `defer handlePanic()`。
-- `recover()` 回傳 `any`：有 panic 時是 panic 的值，沒有時是 `nil`。
-- 被接住後，發生 panic 的函式會正常回到呼叫者，回傳值是零值（除非另外設定）。
+- `recover()` 回傳 `any`：成功接住 panic 時不是 `nil`；`panic(nil)` 在現行預設執行期也一樣。
+- 接住後，安排復原的函式會完成剩下的 `defer`，再回到呼叫者，不會恢復已結束的呼叫鏈；回傳值也不保證是零值。
 - 一般錯誤還是用 `error`，`recover` 只留給少數必要的場合。
